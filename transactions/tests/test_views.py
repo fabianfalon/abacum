@@ -55,6 +55,15 @@ class TestViews:
         assert response.status_code == 200
         assert response.json().get("results") == expected
 
+    @pytest.mark.parametrize(
+        'frequency, status_code', [('TEST', 400), ('MONTH', 400), ('MONTHLY', 200), (None, 400)]
+    )
+    def test_get_balance_by_fail_frequency(self, client, populate_transactions, frequency, status_code):
+        response = client.get(
+            f"{self.URL_BASE}api/balance/{self.ACCOUNT}/?frequency={frequency}"
+        )
+        assert response.status_code == status_code
+
     def test_get_balance_full_year_by_account(self, client, populate_transactions):
 
         response = client.get(

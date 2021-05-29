@@ -63,7 +63,7 @@ class TransactionBalanceByAccount(generics.GenericAPIView, ListModelMixin):
     queryset = Transactions.objects.all()
 
     frequency = openapi.Parameter(
-        "frequency",
+        "frequency (year / monthly)",
         openapi.IN_QUERY,
         required=False,
         type=openapi.TYPE_STRING,
@@ -80,6 +80,14 @@ class TransactionBalanceByAccount(generics.GenericAPIView, ListModelMixin):
     def get(self, request, *args, **kwargs):
         account = kwargs.get("account")
         frequency = self.request.GET.get("frequency", None)
+        frequency = frequency.lower() if frequency else None
+
+        if not frequency or frequency not in ["year", "monthly"]:
+            return Response(
+                "Frequency field error, wrong value",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         queryset = Transactions.get_balance_by_frequency(account, frequency)
         page = self.paginate_queryset(queryset)
         if page is not None:
