@@ -142,14 +142,8 @@ class TransactionGetMonthlyBalanceForSpecificMonthlyAndSpecificAccount(
             )
 
         account = kwargs.get("account")
-        queryset = Transactions.get_monthly_balance_by_month_by_account(month, account)
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        self.queryset = Transactions.get_monthly_balance_by_month_by_account(month, account)
+        return self.list(request, *args, **kwargs)
 
 
 class TransactionGetMonthlyBalanceForSpecificMonthByAccount(
@@ -173,11 +167,7 @@ class TransactionGetMonthlyBalanceForSpecificMonthByAccount(
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        queryset = Transactions.get_balance_by_month(month)
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+        self.queryset = Transactions.get_balance_by_month(month)
+        print("pasooo")
+        return self.list(request, *args, **kwargs)
 
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
