@@ -87,15 +87,8 @@ class TransactionBalanceByAccount(generics.GenericAPIView, ListModelMixin):
                 "Frequency field error, wrong value",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        queryset = Transactions.get_balance_by_frequency(account, frequency)
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        self.queryset = Transactions.get_balance_by_frequency(account, frequency)
+        return self.list(request, *args, **kwargs)
 
 
 class TransactionGetFullYearBalanceByAccount(generics.GenericAPIView, ListModelMixin):
@@ -110,14 +103,8 @@ class TransactionGetFullYearBalanceByAccount(generics.GenericAPIView, ListModelM
         },
     )
     def get(self, request, *args, **kwargs):
-        queryset = Transactions.get_full_year_balance_by_account()
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        self.queryset = Transactions.get_full_year_balance_by_account()
+        return self.list(request, *args, **kwargs)
 
 
 class TransactionGetMonthlyBalanceForSpecificMonthlyAndSpecificAccount(
@@ -134,7 +121,7 @@ class TransactionGetMonthlyBalanceForSpecificMonthlyAndSpecificAccount(
         },
     )
     def get(self, request, *args, **kwargs):
-        month = kwargs.get("month", None)
+        month = kwargs.get("month", 13)
         if int(month) > 12 or int(month) < 1:
             return Response(
                 "Error, you are entering an incorrect or out of range month",
@@ -168,6 +155,5 @@ class TransactionGetMonthlyBalanceForSpecificMonthByAccount(
             )
 
         self.queryset = Transactions.get_balance_by_month(month)
-        print("pasooo")
         return self.list(request, *args, **kwargs)
 
