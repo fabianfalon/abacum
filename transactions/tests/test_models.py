@@ -83,7 +83,7 @@ class TestTransaction:
 
     def test_get_balance_by_month(self, populate_transactions):
 
-        result = Transactions.get_balance_by_month(12)
+        result = Transactions.get_monthly_balance_by_month_by_account(12)
         result = list(result)
         expected = [
             {"account": "1111", "month": datetime(2020, 12, 1).date(), "balance": 100},

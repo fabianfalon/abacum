@@ -54,28 +54,18 @@ class Transactions(models.Model):
         )
 
     @classmethod
-    def get_monthly_balance_by_month_by_account(cls, month, account):
+    def get_monthly_balance_by_month_by_account(cls, month, account=None):
         days = calendar.monthrange(2020, month)
         start_date = f"2020-{month}-{days[0]}"
         end_date = f"2020-{month}-{days[1]}"
-
+        filters = {}
+        if account:
+            filters["account"] = account
+        if month:
+            filters["date__range"] = [start_date, end_date]
+        print(filters)
         return (
-            cls.objects.filter(account=account, date__range=[start_date, end_date])
-            .annotate(month=TruncMonth("date"))
-            .values("month")
-            .annotate(balance=Sum("amount"))
-            .values("account", "month", "balance")
-            .order_by("-month")
-        )
-
-    @classmethod
-    def get_balance_by_month(cls, month):
-        days = calendar.monthrange(2020, month)
-        start_date = f"2020-{month}-{days[0]}"
-        end_date = f"2020-{month}-{days[1]}"
-
-        return (
-            cls.objects.filter(date__range=[start_date, end_date])
+            cls.objects.filter(**filters)
             .annotate(month=TruncMonth("date"))
             .values("month")
             .annotate(balance=Sum("amount"))

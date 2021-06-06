@@ -154,6 +154,6 @@ class TransactionGetMonthlyBalanceForSpecificMonthByAccount(
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        self.queryset = Transactions.get_balance_by_month(month)
+        self.queryset = Transactions.get_monthly_balance_by_month_by_account(month)
         return self.list(request, *args, **kwargs)
 
